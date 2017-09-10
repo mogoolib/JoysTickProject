@@ -17,31 +17,44 @@ public class Joystick : MonoBehaviour , IDragHandler , IPointerDownHandler , IPo
     [Range(0,1)]
     public int resetType = 0; //0：差值运动 1：自定义动作
 
-    [Header("[摇杆复位速度系数]")]
-    public float spFactor = 3.0f;
+    [Header("[摇杆复位时间]")]
+    public float replaceTime = 1.0f;
 
     [Header("[摇杆自定义动作]")]
     public AnimationCurve customAnimCurve;
 
     [Header("[摇杆自定义动作持续时间]")]
-    public float durationTime = 2.0f;
+    public float durationTime = 1.0f;
 
     private bool pointerUp = false; //是否抬起
     private bool isActionPlay = false;
     private float deltaX = 0;
     private Vector3 defaultPositionX = Vector3.zero;
 
+    public Vector3 targetDirection = Vector3.zero;
+
     void Start () {
         Debug.Log("resetType == " + resetType);
 	}
 
 	void Update () {
-        if (pointerUp){
-            joysTickBtnTransForm.localPosition = Vector3.Lerp(joysTickBtnTransForm.localPosition, Vector3.zero, Time.deltaTime * spFactor);
+        if (pointerUp)
+        {
+            deltaX += Time.deltaTime / replaceTime;
+            joysTickBtnTransForm.localPosition = Vector3.Lerp(defaultPositionX, Vector3.zero, deltaX);
+            targetDirection = Vector3.zero;
+        }
+        else {
+            targetDirection = joysTickBtnTransForm.localPosition.normalized;
         }
         if (isActionPlay) {
-            deltaX += Time.deltaTime/durationTime;
+            deltaX += Time.deltaTime / durationTime;
             joysTickBtnTransForm.localPosition = Vector3.LerpUnclamped(defaultPositionX, Vector3.zero, customAnimCurve.Evaluate(deltaX));
+            targetDirection = Vector3.zero;
+        }
+        else
+        {
+            targetDirection = joysTickBtnTransForm.localPosition.normalized;
         }
     }
 
@@ -61,9 +74,10 @@ public class Joystick : MonoBehaviour , IDragHandler , IPointerDownHandler , IPo
             pointerUp = true;
         } else if (resetType == 1) {
             isActionPlay = true;
-            deltaX = 0;
-            defaultPositionX = joysTickBtnTransForm.localPosition;
         }
+
+        deltaX = 0;
+        defaultPositionX = joysTickBtnTransForm.localPosition;
     }
 
     public void OnPointerDown(PointerEventData eventData)
