@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoysTickProject", "JoysTickProject.csproj", "{3752F36E-404B-2F89-DE3E-69A4E17CD21E}"
 EndProject
 Global
