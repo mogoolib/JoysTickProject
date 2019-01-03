@@ -10,28 +10,31 @@ public class UIJoystickControl : MonoBehaviour {
     public delegate void JoystickDropDelegate();
     public JoystickDropDelegate joystickDropDelegate;
 
-
     public Transform border;
 
 	private float moveDistance;
 
 	private Vector3 startPosition;
 
-	// Use this for initialization
-	void Start () {
+    public static UIJoystickControl Instance;
+
+    void Awake()
+    {
+        Instance = this;    
+    }
+
+    void Start () {
 
 		startPosition = transform.position;
 
 		moveDistance = Vector3.Distance(transform.position, border.position);
 	}
 	
-	// Update is called once per frame
 	void Update () {
         if (joystickDragDelegate != null) {
             if (Vector3.Distance(transform.position, startPosition) > 0.1f) {
                 Vector3 dir = (Input.mousePosition - startPosition).normalized;
                 joystickDragDelegate(dir);
-                print(dir);
             }
         }
 	}
