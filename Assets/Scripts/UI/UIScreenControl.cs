@@ -2,41 +2,36 @@
 
 public class UIScreenControl : MonoBehaviour{
 
-    public Transform m_Cam;
+    public Transform player;
+    public Camera camera;
+
+    public float hight = 1.0f;
+    public float distance = -3.0f;
+
+    private Vector3 diff;
 
 	void Start ()
     {
+        camera.transform.position = player.position + new Vector3(0, hight, distance);
 
-        if (m_Cam != null)
-        {
-            m_Cam = Camera.main.transform;
-        }
-        else
-        {
-            Debug.LogWarning("Warning: no main camera found");
-        }
-
+        diff = camera.transform.position - player.position;
     }
-	
-    Vector3 pos;
-    bool isPointerDowwn;
 
     void Update ()
     {
-        if (Input.GetMouseButtonDown(0)) {
-            isPointerDowwn = true;
-            pos = Input.mousePosition;
-            if (pos.x < transform.position.x) {
-                return;
-            }
-        }
+        if (Input.GetMouseButton(1))
+        {
+            //rotate
+            float x = Input.GetAxis("Mouse X");
+            float y = Input.GetAxis("Mouse Y");
+            Vector3 rotate = new Vector3(y, x, 0);
+            Vector3 cameraEulerAngle = camera.transform.eulerAngles;
+            cameraEulerAngle = cameraEulerAngle + rotate;
+            camera.transform.eulerAngles = cameraEulerAngle;
 
-        if (Input.GetMouseButton(0) && isPointerDowwn){
-            Debug.Log(transform.position);
-            float distance = (Input.mousePosition - pos).x;
-            float ditrction = distance > 0 ? 1.0f : -1.0f;
-            float tmpDis = Mathf.Abs(distance) / 300.0f * 100;
-            m_Cam.Rotate(Vector3.up, ditrction * tmpDis * 1.0f * Time.deltaTime, Space.World);
+            //position
+            diff = camera.transform.position - player.position;
+            camera.transform.position = player.position + Quaternion.Euler(rotate) * diff;
         }
     }
 
